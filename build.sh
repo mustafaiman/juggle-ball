@@ -1,7 +1,23 @@
 #!/bin/bash
 
+# Function to activate virtual environment based on OS
+activate_venv() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        # macOS
+        source venv/bin/activate
+    else
+        # Linux
+        source venv/bin/activate
+    fi
+}
+
+# Create virtual environment if it doesn't exist
+if [ ! -d "venv" ]; then
+    python -m venv venv
+fi
+
 # Activate virtual environment
-source activate.sh
+activate_venv
 
 # Install dependencies if needed
 if [ ! -f "venv/installed_requirements" ]; then
@@ -14,7 +30,7 @@ mkdir -p dist
 
 # Build executable using PyInstaller
 pyinstaller --onefile \
-            --name juggle_ball \
+            --name "juggle_ball" \
             --collect-all pygame \
             --hidden-import pygame \
             --log-level DEBUG \

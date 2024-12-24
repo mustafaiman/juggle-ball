@@ -29,15 +29,20 @@ This project serves as an example of what can be achieved through human-AI colla
 
 1. Install Python from [python.org](https://python.org)
 
-2. Install Pygame:
-```bash
-pip install pygame
+2. Build the game:
+
+**Windows:**
+```powershell
+.\build.ps1
 ```
 
-3. Run the game:
+**macOS/Linux:**
 ```bash
-python juggle_ball.py
+chmod +x build.sh  # Make script executable (first time only)
+./build.sh
 ```
+
+The executable will be created in the `dist` directory.
 
 ## How to Play
 
