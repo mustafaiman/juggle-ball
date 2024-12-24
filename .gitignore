@@ -1,0 +1,18 @@
+venv/
+__pycache__/
+*.pyc
+venv/installed_requirements
+# Exclude common image formats
+*.png
+*.jpg
+*.jpeg
+*.gif
+# Exclude sound files
+*.wav
+*.mp3
+*.ogg
+# PyInstaller
+build/
+dist/
+*.spec 
+juggle_ball_high_scores.json 
