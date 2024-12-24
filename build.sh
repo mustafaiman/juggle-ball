@@ -14,10 +14,10 @@ mkdir -p dist
 
 # Build executable using PyInstaller
 pyinstaller --onefile \
-            --name catch_game \
+            --name juggle_ball \
             --collect-all pygame \
             --hidden-import pygame \
             --log-level DEBUG \
-            catch_game.py
+            juggle_ball.py
 
-echo "Build complete! Executable is in dist/catch_game" 
+echo "Build complete! Executable is in dist/juggle_ball" 

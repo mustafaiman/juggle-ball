@@ -36,7 +36,7 @@ pip install pygame
 
 3. Run the game:
 ```bash
-python catch_game.py
+python juggle_ball.py
 ```
 
 ## How to Play
@@ -67,7 +67,7 @@ python catch_game.py
 
 ```
 juggle-ball/
-├── catch_game.py          # Main game file
+├── juggle_ball.py         # Main game file
 ├── src/
 │   ├── ball.py           # Ball physics and behavior
 │   ├── paddle.py         # Paddle controls and collision
