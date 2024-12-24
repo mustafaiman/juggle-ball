@@ -1,28 +1,18 @@
 name: Build and Publish Game
 
 on:
-  push
-
-# on:
-#   release:
-#     type: [created]
+  release:
+    types: [created]
 
 jobs:
-  create-release:
-    # if: startsWith(github.ref, 'refs/tags/')
+  build:
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-latest, macos-latest]
         python-version: ['3.12']
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Info
-      run: |
-        echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
-        echo "🐧 This job is now running on a ${{ runner.os }} server hosted by GitHub!"
-        echo "🔎 The name of your branch is ${{ github.ref }} and your repository is ${{ github.repository }}."
-    
     - name: Checkout
       uses: actions/checkout@v4
 
@@ -31,28 +21,54 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     
-    - name: Install pip
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
 
-    - name: Generate SHA file
-      run: |
-        echo ${{ github.ref }} > commit_hash.txt
-        pwd
-        ls
+    - name: Make build script executable
+      run: chmod +x build.sh
+      
+    - name: Build game
+      run: ./build.sh
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: juggle_ball_${{ runner.os }}
+        path: dist/juggle_ball*
+        retention-days: 5
+
+  create-release:
+    needs: build
+    runs-on: ubuntu-latest
     
-    # - name: Build and Package
-    #   run: |
-    #     if [ "$RUNNER_OS" == "Windows" ]; then
-    #       build.ps1
-    #     else
-    #       ./build.sh
-    #     fi
-    #   shell: bash
+    steps:
+    - name: Download Linux artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: juggle_ball_Linux
+        path: linux_build
 
-    - name: Release
-      uses: softprops/action-gh-release@v2
+    - name: Download macOS artifact
+      uses: actions/download-artifact@v3
+      with:
+        name: juggle_ball_macOS
+        path: macos_build
+
+    - name: Prepare release assets
+      run: |
+        mkdir release_assets
+        cp linux_build/juggle_ball release_assets/juggle_ball_linux
+        cp macos_build/juggle_ball release_assets/juggle_ball_macos
+        chmod +x release_assets/*
+
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
       with:
         files: |
-          commit_hash.txt
+          release_assets/*
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   
