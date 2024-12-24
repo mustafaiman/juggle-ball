@@ -3,9 +3,13 @@ name: Build and Publish Game
 on:
   push
 
+# on:
+#   release:
+#     type: [created]
+
 jobs:
   create-release:
-    if: startsWith(github.ref, 'refs/tags/')
+    # if: startsWith(github.ref, 'refs/tags/')
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -30,12 +34,25 @@ jobs:
     - name: Install pip
       run: |
         python -m pip install --upgrade pip
-    
-    - name: Build and Package
+
+    - name: Generate SHA file
       run: |
-        if [ "$RUNNER_OS" == "Windows" ]; then
-          build.ps1
-        else
-          ./build.sh
-        fi
-      shell: bash
+        echo ${{ github.ref }} > commit_hash.txt
+        pwd
+        ls
+    
+    # - name: Build and Package
+    #   run: |
+    #     if [ "$RUNNER_OS" == "Windows" ]; then
+    #       build.ps1
+    #     else
+    #       ./build.sh
+    #     fi
+    #   shell: bash
+
+    - name: Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          commit_hash.txt
+  
