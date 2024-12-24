@@ -1,8 +1,9 @@
 name: Build and Publish Game
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'  # Trigger on version tags
 
 permissions:
   contents: write  # Required for creating/modifying releases
@@ -48,6 +49,10 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+    - name: Get version from tag
+      id: get_version
+      run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
     - name: Download Linux artifact
       uses: actions/download-artifact@v3
       with:
@@ -62,8 +67,8 @@ jobs:
 
     - name: Prepare release assets
       run: |
+        VERSION=${{ steps.get_version.outputs.VERSION }}
         mkdir release_assets
-        VERSION=${GITHUB_REF#refs/tags/}
         cp linux_build/juggle_ball "release_assets/juggle_ball_linux_${VERSION}"
         cp macos_build/juggle_ball "release_assets/juggle_ball_macos_${VERSION}"
         chmod +x release_assets/*
@@ -71,6 +76,10 @@ jobs:
     - name: Upload to release
       uses: softprops/action-gh-release@v1
       with:
+        name: Release ${{ steps.get_version.outputs.VERSION }}
+        tag_name: ${{ steps.get_version.outputs.VERSION }}
+        draft: true
+        prerelease: false
         files: |
           release_assets/*
       env:
