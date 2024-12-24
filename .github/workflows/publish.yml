@@ -4,6 +4,9 @@ on:
   release:
     types: [created]
 
+permissions:
+  contents: write  # Required for creating/modifying releases
+
 jobs:
   build:
     strategy:
@@ -60,8 +63,9 @@ jobs:
     - name: Prepare release assets
       run: |
         mkdir release_assets
-        cp linux_build/juggle_ball release_assets/juggle_ball_linux
-        cp macos_build/juggle_ball release_assets/juggle_ball_macos
+        VERSION=${GITHUB_REF#refs/tags/}
+        cp linux_build/juggle_ball "release_assets/juggle_ball_linux_${VERSION}"
+        cp macos_build/juggle_ball "release_assets/juggle_ball_macos_${VERSION}"
         chmod +x release_assets/*
 
     - name: Upload to release
